@@ -13,11 +13,21 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
+// Keep a persistent database connection
+let cachedDb: any = null;
+
 export async function initializeDatabase() {
+  if (cachedDb) {
+    return cachedDb;
+  }
+
   const db = await open({
     filename: dbPath,
     driver: sqlite3.Database
   });
+
+  // Enable foreign keys
+  await db.exec('PRAGMA foreign_keys = ON');
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -61,12 +71,13 @@ export async function initializeDatabase() {
     CREATE INDEX IF NOT EXISTS idx_chat_user ON chats(userId);
   `);
 
+  cachedDb = db;
   return db;
 }
 
 export async function getDatabase() {
-  return await open({
-    filename: dbPath,
-    driver: sqlite3.Database
-  });
+  if (cachedDb) {
+    return cachedDb;
+  }
+  return await initializeDatabase();
 }
