@@ -55,16 +55,6 @@ export default function UserProfile({ onNavigate, onSave }: UserProfileProps) {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center p-4">
       {/* Header */}
       <button
-        onClick={() => onNavigate('landing')}
-        className="absolute top-6 left-6 flex items-center gap-2 text-indigo-300 hover:text-white transition"
-      >
-        <ArrowLeft size={20} /> Back
-      </button>
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center p-4">
-      {/* Header */}
-      <button
         onClick={() => onNavigate('tasks')}
         className="absolute top-6 left-6 flex items-center gap-2 text-indigo-300 hover:text-white transition"
       >
