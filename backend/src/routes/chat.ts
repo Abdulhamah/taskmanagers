@@ -28,8 +28,14 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Get AI response from Claude
-    const response = await getAIChatResponse(message);
+    // Fetch user's tasks for context
+    const tasks = await db.all(
+      'SELECT id, title, description, status, priority, dueDate FROM tasks WHERE userId = ? ORDER BY createdAt DESC LIMIT 20',
+      userId
+    );
+
+    // Get AI response from Claude with task context
+    const response = await getAIChatResponse(message, tasks);
     
     // Check if message is about creating a task
     const taskMatch = message.match(/create task:?\s*(.+)/i);
@@ -82,14 +88,27 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
-async function getAIChatResponse(message: string): Promise<string> {
+async function getAIChatResponse(
+  message: string,
+  tasks: Array<{ id: string; title: string; description: string; status: string; priority: string; dueDate: string | null }>
+): Promise<string> {
   try {
+    // Format tasks for context
+    let tasksContext = '';
+    if (tasks && tasks.length > 0) {
+      tasksContext = '\n\nUser\'s current tasks:\n' + 
+        tasks.map(t => 
+          `• [${t.status.toUpperCase()}] ${t.title} (${t.priority} priority)${t.dueDate ? ` - Due: ${t.dueDate}` : ''}`
+        ).join('\n');
+    }
+
     const response = await client.messages.create({
       model: 'claude-opus-4-1-20250805',
       max_tokens: 500,
       system: `You are TaskMaster AI, a helpful productivity assistant integrated with a task management app. 
 You help users create, organize, and manage their tasks. When users say "create task: [task name]", acknowledge that the task will be created.
-Provide actionable advice for productivity, task management, and focus. Be concise and friendly.`,
+Provide actionable advice for productivity, task management, and focus. Be concise and friendly.
+You have access to the user's current tasks and should reference them when giving advice.${tasksContext}`,
       messages: [
         {
           role: 'user',

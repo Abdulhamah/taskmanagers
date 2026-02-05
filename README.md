@@ -281,4 +281,4 @@ For support, email support@taskmaster.ai or open an issue on GitHub.
 
 ---
 
-Made with ❤️ by the TaskMaster team
+M

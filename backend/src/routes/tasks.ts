@@ -17,20 +17,30 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { title, description, priority, status, dueDate, category } = req.body;
+    const { userId, title, description, priority, status, dueDate, category } = req.body;
 
     if (!title) {
       return res.status(400).json({ error: 'Title is required' });
     }
 
     const db = await getDatabase();
+    
+    // If userId is provided, verify user exists
+    let ownerUserId = userId;
+    if (ownerUserId) {
+      const user = await db.get('SELECT id FROM users WHERE id = ?', ownerUserId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+    }
+
     const id = uuidv4();
     const now = new Date().toISOString();
 
     await db.run(
-      `INSERT INTO tasks (id, title, description, priority, status, dueDate, category, createdAt, updatedAt)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [id, title, description || '', priority || 'medium', status || 'todo', dueDate || null, category || 'work', now, now]
+      `INSERT INTO tasks (id, userId, title, description, priority, status, dueDate, category, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, ownerUserId || null, title, description || '', priority || 'medium', status || 'todo', dueDate || null, category || 'work', now, now]
     );
 
     const task = await db.get('SELECT * FROM tasks WHERE id = ?', id);
