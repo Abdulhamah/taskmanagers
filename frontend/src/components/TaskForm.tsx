@@ -72,24 +72,24 @@ export default function TaskForm({ onClose }: TaskFormProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-800">Create New Task</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-slate-900 border border-indigo-500/30 rounded-2xl shadow-2xl max-w-md w-full">
+        <div className="flex justify-between items-center p-6 border-b border-indigo-500/20">
+          <h2 className="text-2xl font-bold text-white">Create New Task</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition">
             <X size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Task Title *</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Task Title *</label>
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-slate-800/50 border border-indigo-500/30 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               placeholder="What needs to be done?"
               required
             />
@@ -97,12 +97,12 @@ export default function TaskForm({ onClose }: TaskFormProps) {
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">Description</label>
+              <label className="block text-sm font-medium text-slate-300">Description</label>
               <button
                 type="button"
                 onClick={handleAIAssist}
                 disabled={aiLoading || !formData.title.trim()}
-                className="text-indigo-600 hover:text-indigo-700 flex items-center gap-1 text-sm disabled:text-gray-400"
+                className="text-indigo-400 hover:text-indigo-300 flex items-center gap-1 text-xs font-semibold disabled:text-slate-500 transition"
               >
                 <Wand2 size={16} /> {aiLoading ? 'Thinking...' : 'AI Assist'}
               </button>
@@ -111,7 +111,7 @@ export default function TaskForm({ onClose }: TaskFormProps) {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              className="w-full px-4 py-2 bg-slate-800/50 border border-indigo-500/30 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-none"
               rows={4}
               placeholder="Add more details..."
             />
@@ -119,12 +119,12 @@ export default function TaskForm({ onClose }: TaskFormProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Priority</label>
               <select
                 name="priority"
                 value={formData.priority}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 bg-slate-800/50 border border-indigo-500/30 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -133,12 +133,12 @@ export default function TaskForm({ onClose }: TaskFormProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Category</label>
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 bg-slate-800/50 border border-indigo-500/30 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               >
                 <option value="work">Work</option>
                 <option value="personal">Personal</option>
@@ -150,13 +150,13 @@ export default function TaskForm({ onClose }: TaskFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Due Date</label>
             <input
               type="date"
               name="dueDate"
               value={formData.dueDate}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-slate-800/50 border border-indigo-500/30 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
           </div>
 
@@ -164,14 +164,14 @@ export default function TaskForm({ onClose }: TaskFormProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition"
+              className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-lg transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !formData.title.trim()}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:bg-gray-400"
+              className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:from-slate-500 disabled:to-slate-500"
             >
               {loading ? 'Creating...' : 'Create Task'}
             </button>

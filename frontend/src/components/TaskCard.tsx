@@ -14,15 +14,15 @@ export default function TaskCard({ task }: TaskCardProps) {
   const [suggestion, setSuggestion] = useState<string | null>(null);
 
   const priorityColors = {
-    low: 'bg-blue-100 text-blue-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    high: 'bg-red-100 text-red-800'
+    low: 'bg-blue-500/30 text-blue-200 border border-blue-500/50',
+    medium: 'bg-yellow-500/30 text-yellow-200 border border-yellow-500/50',
+    high: 'bg-red-500/30 text-red-200 border border-red-500/50'
   };
 
   const statusColors = {
-    todo: 'text-gray-500',
-    'in-progress': 'text-blue-500',
-    done: 'text-green-500'
+    todo: 'text-yellow-400',
+    'in-progress': 'text-indigo-400',
+    done: 'text-green-400'
   };
 
   const handleStatusChange = async () => {
@@ -63,34 +63,32 @@ export default function TaskCard({ task }: TaskCardProps) {
   };
 
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="font-semibold text-gray-800 flex-1">{task.title}</h3>
-        <div className="flex gap-2">
-          <button
-            onClick={handleDelete}
-            className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded"
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
+    <div className="bg-slate-800/50 border border-indigo-500/20 rounded-lg p-4 hover:border-indigo-500/50 hover:bg-slate-800/70 transition backdrop-blur-sm">
+      <div className="flex justify-between items-start mb-3">
+        <h3 className="font-semibold text-white flex-1 text-sm">{task.title}</h3>
+        <button
+          onClick={handleDelete}
+          className="text-red-400 hover:text-red-300 hover:bg-red-500/20 p-1 rounded transition"
+        >
+          <Trash2 size={16} />
+        </button>
       </div>
 
       {task.description && (
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{task.description}</p>
+        <p className="text-xs text-slate-400 mb-3 line-clamp-2">{task.description}</p>
       )}
 
       <div className="flex gap-2 mb-3 flex-wrap">
-        <span className={`text-xs font-semibold px-2 py-1 rounded ${priorityColors[task.priority]}`}>
+        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${priorityColors[task.priority]}`}>
           {task.priority}
         </span>
-        <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
+        <span className="text-xs bg-purple-500/30 text-purple-200 px-2 py-1 rounded-full border border-purple-500/20">
           {task.category}
         </span>
       </div>
 
       {task.dueDate && (
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-slate-400 mb-3">
           Due: {formatDistanceToNow(new Date(task.dueDate), { addSuffix: true })}
         </p>
       )}
@@ -98,7 +96,7 @@ export default function TaskCard({ task }: TaskCardProps) {
       <div className="flex gap-2">
         <button
           onClick={handleStatusChange}
-          className={`flex-1 text-xs font-semibold py-1 px-2 rounded border transition ${statusColors[task.status]}`}
+          className={`flex-1 text-xs font-semibold py-2 px-2 rounded border transition ${statusColors[task.status]} border-current/30 hover:bg-current/10`}
         >
           {task.status === 'todo' && '⭕ To Do'}
           {task.status === 'in-progress' && '🔵 In Progress'}
@@ -109,23 +107,24 @@ export default function TaskCard({ task }: TaskCardProps) {
             setShowAI(!showAI);
             if (!showAI && !suggestion) handleAISuggestion();
           }}
-          className="text-indigo-600 hover:text-indigo-700 p-1 hover:bg-indigo-50 rounded"
+          className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/20 p-2 rounded transition"
+          title="Get AI Suggestion"
         >
           <Lightbulb size={16} />
         </button>
       </div>
 
       {showAI && (
-        <div className="mt-3 p-3 bg-indigo-50 border border-indigo-200 rounded text-sm">
+        <div className="mt-3 p-3 bg-indigo-500/10 border border-indigo-500/30 rounded text-xs">
           {aiLoading ? (
-            <p className="text-indigo-700">Getting AI suggestion...</p>
+            <p className="text-indigo-300">✨ Getting AI suggestion...</p>
           ) : suggestion ? (
             <div>
-              <p className="text-indigo-900 font-semibold mb-1">AI Suggestion:</p>
-              <p className="text-indigo-700">{suggestion}</p>
+              <p className="text-indigo-200 font-semibold mb-1">💡 AI Tip:</p>
+              <p className="text-indigo-300">{suggestion}</p>
             </div>
           ) : (
-            <p className="text-indigo-700">No suggestion available</p>
+            <p className="text-indigo-400">No suggestion available</p>
           )}
         </div>
       )}

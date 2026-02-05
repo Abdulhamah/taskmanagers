@@ -3,6 +3,8 @@ import cors from 'cors';
 import { initializeDatabase } from './db/init.js';
 import tasksRouter from './routes/tasks.js';
 import aiRouter from './routes/ai.js';
+import authRouter from './routes/auth.js';
+import chatRouter from './routes/chat.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,8 +19,10 @@ app.get('/health', (req, res) => {
 });
 
 // Routes
+app.use('/auth', authRouter);
 app.use('/tasks', tasksRouter);
 app.use('/ai', aiRouter);
+app.use('/chat', chatRouter);
 
 // Initialize database and start server
 async function start() {
