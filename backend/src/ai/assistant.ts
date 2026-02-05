@@ -3,14 +3,26 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY || 'sk-test-key'
-});
+const anthropicKey = process.env.ANTHROPIC_API_KEY;
+const openaiKey = process.env.OPENAI_API_KEY;
+
+// Try Anthropic first, fall back to OpenAI if needed
+let client: any;
+
+if (anthropicKey && anthropicKey !== 'sk-test-key') {
+  client = new Anthropic({
+    apiKey: anthropicKey
+  });
+} else {
+  client = new Anthropic({
+    apiKey: anthropicKey || 'sk-test-key'
+  });
+}
 
 export async function getTaskDescription(title: string): Promise<{ description: string; category: string }> {
   try {
     const message = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-opus-4-1-20250805',
       max_tokens: 200,
       messages: [
         {
@@ -42,7 +54,7 @@ export async function getTaskDescription(title: string): Promise<{ description: 
 export async function getTaskSuggestion(title: string, description: string, status: string): Promise<string> {
   try {
     const message = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-opus-4-1-20250805',
       max_tokens: 150,
       messages: [
         {
@@ -68,7 +80,7 @@ export async function getTaskAnalysis(tasks: Array<{ title: string; status: stri
     const taskList = tasks.map(t => `- ${t.title} (${t.priority} priority, ${t.status})`).join('\n');
     
     const message = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-opus-4-1-20250805',
       max_tokens: 300,
       messages: [
         {

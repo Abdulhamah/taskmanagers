@@ -1,9 +1,16 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import Anthropic from '@anthropic-ai/sdk';
+import dotenv from 'dotenv';
 import { getDatabase } from '../db/init.js';
-import { getTaskSuggestion } from '../ai/assistant.js';
+
+dotenv.config();
 
 const router = Router();
+
+const client = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY || 'sk-test-key'
+});
 
 router.post('/', async (req, res) => {
   try {
@@ -21,7 +28,7 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Get AI response
+    // Get AI response from Claude
     const response = await getAIChatResponse(message);
     
     // Check if message is about creating a task
@@ -76,31 +83,30 @@ router.get('/:userId', async (req, res) => {
 });
 
 async function getAIChatResponse(message: string): Promise<string> {
-  // Enhanced AI responses for various requests
-  const lowerMessage = message.toLowerCase();
+  try {
+    const response = await client.messages.create({
+      model: 'claude-opus-4-1-20250805',
+      max_tokens: 500,
+      system: `You are TaskMaster AI, a helpful productivity assistant integrated with a task management app. 
+You help users create, organize, and manage their tasks. When users say "create task: [task name]", acknowledge that the task will be created.
+Provide actionable advice for productivity, task management, and focus. Be concise and friendly.`,
+      messages: [
+        {
+          role: 'user',
+          content: message
+        }
+      ]
+    });
 
-  if (lowerMessage.includes('create task')) {
-    return 'I can help you create a task! Just say "create task: [task name]" and I\'ll add it to your list.';
+    const content = response.content[0];
+    if (content.type === 'text') {
+      return content.text;
+    }
+    return 'I had trouble processing your request. Please try again.';
+  } catch (error) {
+    console.error('Claude API error:', error);
+    return 'I\'m having trouble connecting to AI right now. Please try again later.';
   }
-
-  if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-    return 'Hello! 👋 I\'m your AI assistant. I can help you create tasks, get suggestions, and manage your productivity. What would you like to do?';
-  }
-
-  if (lowerMessage.includes('help')) {
-    return 'I can help you with:\n• Creating tasks: Say "create task: [name]"\n• Getting suggestions: Ask me for productivity tips\n• Task management: Organize and prioritize your work\nWhat can I help you with?';
-  }
-
-  if (lowerMessage.includes('productivity') || lowerMessage.includes('tips')) {
-    return 'Here are some productivity tips:\n1. Break large tasks into smaller ones\n2. Prioritize high-impact work\n3. Take regular breaks\n4. Use the Pomodoro technique\n5. Review completed tasks for motivation';
-  }
-
-  if (lowerMessage.includes('focus') || lowerMessage.includes('concentrate')) {
-    return 'To improve focus:\n• Remove distractions\n• Set a specific goal for the work session\n• Use time-blocking\n• Take breaks every 25-30 minutes\n• Organize your workspace';
-  }
-
-  // Default response
-  return await getTaskSuggestion(message, '', 'todo');
 }
 
 export default router;
