@@ -1,0 +1,20 @@
+{
+  "name": "taskmaster-ai",
+  "version": "1.0.0",
+  "description": "AI-powered task management application",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=frontend\" \"npm run dev --workspace=backend\"",
+    "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
+    "start": "npm run start --workspace=backend",
+    "install-all": "npm install && npm install --workspace=frontend && npm install --workspace=backend"
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
