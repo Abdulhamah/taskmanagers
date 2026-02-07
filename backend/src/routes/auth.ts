@@ -196,10 +196,11 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Check if email is verified
-    if (!user.emailVerified) {
-      return res.status(403).json({ error: 'Please verify your email first' });
-    }
+    // Email verification check disabled for testing (allow login without verification)
+    // To enable, uncomment the lines below:
+    // if (!user.emailVerified) {
+    //   return res.status(403).json({ error: 'Please verify your email first' });
+    // }
 
     res.json({
       id: user.id,
