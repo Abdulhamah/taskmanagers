@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send, X } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 interface ChatMessage {
   id: string;
@@ -32,7 +33,7 @@ export default function AiChat({ userId: propUserId }: AiChatProps) {
 
   const fetchChatHistory = async () => {
     try {
-      const response = await fetch(`/api/chat/${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/chat/${userId}`);
       const data = await response.json();
       setMessages(data.reverse());
     } catch (error) {
@@ -49,7 +50,7 @@ export default function AiChat({ userId: propUserId }: AiChatProps) {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, message: userMessage })

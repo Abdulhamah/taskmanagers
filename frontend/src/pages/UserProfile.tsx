@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Mail, User, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 
 interface UserProfileProps {
   onNavigate?: never;
@@ -20,7 +21,7 @@ export default function UserProfile({ onSave }: UserProfileProps) {
     // Fetch user info from backend if userId exists
     const userId = localStorage.getItem('userId');
     if (userId) {
-      fetch(`/api/auth/user/${userId}`)
+      fetch(`${API_BASE_URL}/api/auth/user/${userId}`)
         .then(res => res.json())
         .then(data => {
           setUserInfo({

@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-
-const API_BASE_URL = process.env.VITE_API_URL || 'http://localhost:3001';
+import { API_BASE_URL } from '../config';
 
 export interface Task {
   id: string;
@@ -38,7 +37,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const url = userId ? `/api/tasks?userId=${userId}` : '/api/tasks';
+      const url = userId ? `${API_BASE_URL}/api/tasks?userId=${userId}` : `${API_BASE_URL}/api/tasks`;
       const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch tasks');
       const data = await response.json();
@@ -60,7 +59,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         userId: task.userId || localStorage.getItem('userId') || ''
       };
       
-      const response = await fetch('/api/tasks', {
+      const response = await fetch(`${API_BASE_URL}/api/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(taskWithUserId)
@@ -82,7 +81,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/tasks/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/tasks/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
@@ -101,7 +100,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${API_BASE_URL}/api/tasks/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Failed to delete task');
       await getTasks();
     } catch (err) {

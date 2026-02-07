@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, ArrowLeft, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 
 interface RegisterProps {
   onRegisterSuccess: (userId: string, userName: string) => void;
@@ -42,7 +43,7 @@ export default function Register({ onRegisterSuccess }: RegisterProps) {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })
@@ -79,7 +80,7 @@ export default function Register({ onRegisterSuccess }: RegisterProps) {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/verify-email', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/verify-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, code })
