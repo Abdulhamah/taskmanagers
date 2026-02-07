@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 
+const API_BASE_URL = 'https://cynosural-outstanding-uriel.ngrok-free.dev';
+
 export interface Task {
   id: string;
   title: string;
