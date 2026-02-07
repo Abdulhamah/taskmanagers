@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Mail, User, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface UserProfileProps {
-  onNavigate: (page: 'landing' | 'features' | 'profile' | 'tasks' | 'login') => void;
+  onNavigate?: never;
   onSave: (info: { name: string; email: string }) => void;
 }
 
-export default function UserProfile({ onNavigate, onSave }: UserProfileProps) {
+export default function UserProfile({ onSave }: UserProfileProps) {
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState({
     name: localStorage.getItem('userName') || '',
     email: localStorage.getItem('userEmail') || ''
@@ -55,7 +57,7 @@ export default function UserProfile({ onNavigate, onSave }: UserProfileProps) {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center p-4">
       {/* Header */}
       <button
-        onClick={() => onNavigate('tasks')}
+        onClick={() => navigate('/tasks')}
         className="absolute top-6 left-6 flex items-center gap-2 text-indigo-300 hover:text-white transition"
       >
         <ArrowLeft size={20} /> Back

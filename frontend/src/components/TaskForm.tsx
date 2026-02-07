@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Wand2 } from 'lucide-react';
+import { X, Wand2, Bell } from 'lucide-react';
 import { useTaskContext } from '../context/TaskContext';
 
 interface TaskFormProps {
@@ -15,7 +15,8 @@ export default function TaskForm({ onClose }: TaskFormProps) {
     description: '',
     priority: 'medium' as const,
     category: 'work',
-    dueDate: ''
+    dueDate: '',
+    reminderDate: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -35,6 +36,7 @@ export default function TaskForm({ onClose }: TaskFormProps) {
         priority: formData.priority,
         category: formData.category,
         dueDate: formData.dueDate || undefined,
+        reminderDate: formData.reminderDate || undefined,
         status: 'todo'
       });
       onClose();
@@ -158,6 +160,20 @@ export default function TaskForm({ onClose }: TaskFormProps) {
               onChange={handleChange}
               className="w-full px-4 py-2 bg-slate-800/50 border border-indigo-500/30 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+              <Bell size={16} /> Reminder Date
+            </label>
+            <input
+              type="datetime-local"
+              name="reminderDate"
+              value={formData.reminderDate}
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-slate-800/50 border border-indigo-500/30 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            />
+            <p className="text-xs text-slate-400 mt-2">Set when you want to be reminded about this task</p>
           </div>
 
           <div className="flex gap-3 pt-4">

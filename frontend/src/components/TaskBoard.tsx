@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useTaskContext } from '../context/TaskContext';
 import TaskForm from './TaskForm';
@@ -6,10 +6,18 @@ import TaskCard from './TaskCard';
 import TaskFilters from './TaskFilters';
 
 export default function TaskBoard() {
-  const { tasks, loading } = useTaskContext();
+  const { tasks, loading, getTasks } = useTaskContext();
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState<'all' | 'active' | 'done'>('all');
   const [sortBy, setSortBy] = useState<'date' | 'priority'>('date');
+
+  // Load tasks with userId when component mounts
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      getTasks(userId);
+    }
+  }, [getTasks]);
 
   const filteredTasks = tasks.filter(task => {
     if (filter === 'active') return task.status !== 'done';

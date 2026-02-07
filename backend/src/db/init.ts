@@ -37,6 +37,7 @@ export async function initializeDatabase() {
       password TEXT NOT NULL,
       company TEXT,
       role TEXT,
+      emailVerified INTEGER NOT NULL DEFAULT 0,
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL
     );
@@ -51,6 +52,8 @@ export async function initializeDatabase() {
       dueDate TEXT,
       category TEXT NOT NULL DEFAULT 'work',
       aiSuggestion TEXT,
+      reminderDate TEXT,
+      reminderSent INTEGER NOT NULL DEFAULT 0,
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL,
       FOREIGN KEY (userId) REFERENCES users(id)
@@ -65,10 +68,29 @@ export async function initializeDatabase() {
       FOREIGN KEY (userId) REFERENCES users(id)
     );
 
+    CREATE TABLE IF NOT EXISTS passwordResetTokens (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      token TEXT NOT NULL UNIQUE,
+      expiresAt TEXT NOT NULL,
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS emailVerificationTokens (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      token TEXT NOT NULL UNIQUE,
+      expiresAt TEXT NOT NULL,
+      createdAt TEXT NOT NULL,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    );
+
     CREATE INDEX IF NOT EXISTS idx_user_email ON users(email);
     CREATE INDEX IF NOT EXISTS idx_task_user ON tasks(userId);
     CREATE INDEX IF NOT EXISTS idx_task_status ON tasks(status);
     CREATE INDEX IF NOT EXISTS idx_chat_user ON chats(userId);
+    CREATE INDEX IF NOT EXISTS idx_reset_token ON passwordResetTokens(token);
   `);
 
   cachedDb = db;

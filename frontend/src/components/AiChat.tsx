@@ -9,10 +9,11 @@ interface ChatMessage {
 }
 
 interface AiChatProps {
-  userId: string;
+  userId?: string;
 }
 
-export default function AiChat({ userId }: AiChatProps) {
+export default function AiChat({ userId: propUserId }: AiChatProps) {
+  const userId = propUserId || localStorage.getItem('userId') || '';
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');

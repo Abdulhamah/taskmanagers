@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginPageProps {
   onLoginSuccess: (userId: string, userName: string) => void;
 }
 
 export default function Login({ onLoginSuccess }: LoginPageProps) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [name, setName] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +34,7 @@ export default function Login({ onLoginSuccess }: LoginPageProps) {
 
       localStorage.setItem('userId', data.id);
       localStorage.setItem('userName', data.name);
+      localStorage.setItem('userEmail', data.email);
       onLoginSuccess(data.id, data.name);
     } catch (err) {
       setError('Connection error. Please try again.');
@@ -41,37 +42,6 @@ export default function Login({ onLoginSuccess }: LoginPageProps) {
       setLoading(false);
     }
   };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || 'Registration failed');
-        return;
-      }
-
-      localStorage.setItem('userId', data.id);
-      localStorage.setItem('userName', data.name);
-      onLoginSuccess(data.id, data.name);
-    } catch (err) {
-      setError('Connection error. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = isRegistering ? handleRegister : handleLogin;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
@@ -89,9 +59,7 @@ export default function Login({ onLoginSuccess }: LoginPageProps) {
 
         {/* Form Card */}
         <div className="bg-slate-800 bg-opacity-50 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold text-white mb-6">
-            {isRegistering ? 'Create Account' : 'Welcome Back'}
-          </h2>
+          <h2 className="text-2xl font-bold text-white mb-6">Welcome Back</h2>
 
           {error && (
             <div className="bg-red-500 bg-opacity-10 border border-red-500 border-opacity-30 rounded-lg p-4 mb-6 flex items-start gap-3">
@@ -100,23 +68,7 @@ export default function Login({ onLoginSuccess }: LoginPageProps) {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isRegistering && (
-              <div>
-                <label className="block text-sm font-medium text-slate-200 mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  required
-                  className="w-full px-4 py-3 bg-slate-700 bg-opacity-50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition"
-                />
-              </div>
-            )}
-
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-200 mb-2">
                 Email Address
@@ -135,9 +87,18 @@ export default function Login({ onLoginSuccess }: LoginPageProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-200 mb-2">
-                Password
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-slate-200">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => navigate('/forgot-password')}
+                  className="text-xs text-indigo-400 hover:text-indigo-300 transition"
+                >
+                  Forgot password?
+                </button>
+              </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
                 <input
@@ -160,7 +121,7 @@ export default function Login({ onLoginSuccess }: LoginPageProps) {
                 'Loading...'
               ) : (
                 <>
-                  {isRegistering ? 'Create Account' : 'Sign In'}
+                  Sign In
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -169,19 +130,13 @@ export default function Login({ onLoginSuccess }: LoginPageProps) {
 
           <div className="mt-6 pt-6 border-t border-slate-700">
             <p className="text-slate-400 text-center text-sm">
-              {isRegistering ? 'Already have an account?' : "Don't have an account?"}{' '}
+              Don't have an account?{' '}
               <button
                 type="button"
-                onClick={() => {
-                  setIsRegistering(!isRegistering);
-                  setError('');
-                  setEmail('');
-                  setPassword('');
-                  setName('');
-                }}
+                onClick={() => navigate('/register')}
                 className="text-indigo-400 hover:text-indigo-300 font-semibold transition"
               >
-                {isRegistering ? 'Sign In' : 'Create Account'}
+                Create Account
               </button>
             </p>
           </div>

@@ -1,10 +1,9 @@
 import { ArrowLeft, CheckCircle, Sparkles, Zap, Brain, Clock, Filter, BarChart3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface FeaturesProps {
-  onNavigate: (page: 'landing' | 'features' | 'profile' | 'tasks' | 'login') => void;
-}
+export default function Features(): JSX.Element {
+  const navigate = useNavigate();
 
-export default function Features({ onNavigate }: FeaturesProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
       {/* Header */}
@@ -12,7 +11,7 @@ export default function Features({ onNavigate }: FeaturesProps) {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-white">Features</h1>
           <button
-            onClick={() => onNavigate('landing')}
+            onClick={() => navigate('/')}
             className="flex items-center gap-2 text-indigo-300 hover:text-white transition"
           >
             <ArrowLeft size={20} /> Back
@@ -163,7 +162,7 @@ export default function Features({ onNavigate }: FeaturesProps) {
             Start managing your tasks with AI assistance today. It's free to get started!
           </p>
           <button
-            onClick={() => onNavigate('profile')}
+            onClick={() => navigate('/login')}
             className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition"
           >
             Get Started Now

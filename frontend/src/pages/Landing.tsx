@@ -1,10 +1,13 @@
-import { Sparkles, ArrowRight, Zap, Brain, BarChart3 } from 'lucide-react';
+import { ArrowRight, Brain, Zap, BarChart3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface LandingProps {
-  onNavigate: (page: 'landing' | 'features' | 'profile' | 'tasks' | 'login') => void;
-}
+export default function Landing(): JSX.Element {
+  const navigate = useNavigate();
+  
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
 
-export default function Landing({ onNavigate }: LandingProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
       {/* Navigation */}
@@ -19,13 +22,13 @@ export default function Landing({ onNavigate }: LandingProps) {
           </div>
           <div className="flex gap-4">
             <button
-              onClick={() => onNavigate('features')}
+              onClick={() => handleNavigate('/features')}
               className="text-indigo-300 hover:text-white transition"
             >
               Features
             </button>
             <button
-              onClick={() => onNavigate('login')}
+              onClick={() => handleNavigate('/login')}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition"
             >
               Sign In
@@ -51,13 +54,13 @@ export default function Landing({ onNavigate }: LandingProps) {
 
           <div className="flex gap-4 justify-center pt-8">
             <button
-              onClick={() => onNavigate('login')}
+              onClick={() => handleNavigate('/login')}
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition"
             >
               Start Free <ArrowRight size={20} />
             </button>
             <button
-              onClick={() => onNavigate('features')}
+              onClick={() => handleNavigate('/features')}
               className="border border-indigo-400/50 text-indigo-300 hover:bg-indigo-500/10 px-8 py-3 rounded-lg font-semibold transition"
             >
               Learn More

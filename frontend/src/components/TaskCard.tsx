@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2, Lightbulb } from 'lucide-react';
+import { Trash2, Lightbulb, Bell } from 'lucide-react';
 import { useTaskContext, Task } from '../context/TaskContext';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -88,8 +88,14 @@ export default function TaskCard({ task }: TaskCardProps) {
       </div>
 
       {task.dueDate && (
-        <p className="text-xs text-slate-400 mb-3">
+        <p className="text-xs text-slate-400 mb-2">
           Due: {formatDistanceToNow(new Date(task.dueDate), { addSuffix: true })}
+        </p>
+      )}
+
+      {task.reminderDate && (
+        <p className="text-xs text-indigo-300 mb-3 flex items-center gap-1">
+          <Bell size={14} /> Reminder: {formatDistanceToNow(new Date(task.reminderDate), { addSuffix: true })}
         </p>
       )}
 

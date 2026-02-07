@@ -7,8 +7,10 @@ export interface Task {
   priority: 'low' | 'medium' | 'high';
   status: 'todo' | 'in-progress' | 'done';
   dueDate?: string;
+  reminderDate?: string;
   category: string;
   aiSuggestion?: string;
+  userId?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,7 +20,7 @@ interface TaskContextType {
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
-  getTasks: () => Promise<void>;
+  getTasks: (userId?: string) => Promise<void>;
   loading: boolean;
   error: string | null;
 }
@@ -30,11 +32,12 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getTasks = useCallback(async () => {
+  const getTasks = useCallback(async (userId?: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/tasks');
+      const url = userId ? `/api/tasks?userId=${userId}` : '/api/tasks';
+      const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch tasks');
       const data = await response.json();
       setTasks(data);
@@ -49,13 +52,22 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     setError(null);
     try {
+      // Ensure userId is included
+      const taskWithUserId = {
+        ...task,
+        userId: task.userId || localStorage.getItem('userId') || ''
+      };
+      
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(task)
+        body: JSON.stringify(taskWithUserId)
       });
-      if (!response.ok) throw new Error('Failed to create task');
-      await getTasks();
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create task');
+      }
+      await getTasks(taskWithUserId.userId);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       throw err;
