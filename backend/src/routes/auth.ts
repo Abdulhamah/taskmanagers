@@ -90,37 +90,43 @@ router.post('/register', async (req, res) => {
       [codeId, userId, verificationCode, expiresAt, now]
     );
 
-    // Send verification email
-    const transporter = await getEmailTransporter();
-    const info = await transporter.sendMail({
-      from: process.env.GMAIL_EMAIL || '"TaskMasters" <noreply@taskmanagers.org>',
-      to: email,
-      subject: 'Verify Your Email - TaskMasters',
-      html: `
-        <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h2 style="color: #4f46e5; margin-bottom: 20px;">Verify Your Email</h2>
-            <p style="color: #333; font-size: 16px;">Hi ${name},</p>
-            <p style="color: #666; line-height: 1.6;">Welcome to TaskMasters! To complete your registration, please verify your email address using the code below:</p>
-            <div style="text-align: center; margin: 30px 0; background-color: #f0f4ff; padding: 20px; border-radius: 8px;">
-              <p style="color: #999; font-size: 12px; margin: 0 0 10px 0;">Your Verification Code:</p>
-              <p style="color: #4f46e5; font-size: 36px; font-weight: bold; letter-spacing: 8px; margin: 0; font-family: 'Courier New', monospace;">${verificationCode}</p>
+    // Send verification email (non-blocking - continue even if it fails)
+    let previewUrl = '';
+    try {
+      const transporter = await getEmailTransporter();
+      const info = await transporter.sendMail({
+        from: process.env.GMAIL_EMAIL || '"TaskMasters" <noreply@taskmanagers.org>',
+        to: email,
+        subject: 'Verify Your Email - TaskMasters',
+        html: `
+          <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h2 style="color: #4f46e5; margin-bottom: 20px;">Verify Your Email</h2>
+              <p style="color: #333; font-size: 16px;">Hi ${name},</p>
+              <p style="color: #666; line-height: 1.6;">Welcome to TaskMasters! To complete your registration, please verify your email address using the code below:</p>
+              <div style="text-align: center; margin: 30px 0; background-color: #f0f4ff; padding: 20px; border-radius: 8px;">
+                <p style="color: #999; font-size: 12px; margin: 0 0 10px 0;">Your Verification Code:</p>
+                <p style="color: #4f46e5; font-size: 36px; font-weight: bold; letter-spacing: 8px; margin: 0; font-family: 'Courier New', monospace;">${verificationCode}</p>
+              </div>
+              <p style="color: #666; font-size: 14px; margin: 20px 0;">Enter this code on the registration page to verify your email and activate your account.</p>
+              <p style="color: #999; font-size: 12px; margin-top: 20px;">⏰ This code expires in 30 minutes.</p>
+              <p style="color: #999; font-size: 12px;">If you didn't create this account, you can ignore this email.</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+              <p style="color: #999; font-size: 12px; text-align: center;">© 2026 TaskMasters | taskmanagers.org | Powered by AI Task Management</p>
             </div>
-            <p style="color: #666; font-size: 14px; margin: 20px 0;">Enter this code on the registration page to verify your email and activate your account.</p>
-            <p style="color: #999; font-size: 12px; margin-top: 20px;">⏰ This code expires in 30 minutes.</p>
-            <p style="color: #999; font-size: 12px;">If you didn't create this account, you can ignore this email.</p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-            <p style="color: #999; font-size: 12px; text-align: center;">© 2026 TaskMasters | taskmanagers.org | Powered by AI Task Management</p>
           </div>
-        </div>
-      `,
-      text: `Welcome to TaskMasters!\n\nYour email verification code is: ${verificationCode}\n\nEnter this code to verify your email and activate your account.\n\nThis code expires in 30 minutes.\n\nIf you didn't create this account, ignore this email.\n\n---\nTaskMasters | taskmanagers.org`
-    });
+        `,
+        text: `Welcome to TaskMasters!\n\nYour email verification code is: ${verificationCode}\n\nEnter this code to verify your email and activate your account.\n\nThis code expires in 30 minutes.\n\nIf you didn't create this account, ignore this email.\n\n---\nTaskMasters | taskmanagers.org`
+      });
 
-    console.log('✓ Verification code sent to:', email);
-    console.log('📧 Preview URL:', nodemailer.getTestMessageUrl(info) || 'Email sent via SMTP');
+      console.log('✓ Verification code sent to:', email);
+      previewUrl = nodemailer.getTestMessageUrl(info) || '';
+      if (previewUrl) console.log('📧 Preview URL:', previewUrl);
+    } catch (emailError) {
+      console.log('⚠ Email send failed (non-blocking):', emailError instanceof Error ? emailError.message : 'Unknown error');
+      console.log('  Code:', verificationCode);
+    }
     
-    const previewUrl = nodemailer.getTestMessageUrl(info);
     res.status(201).json({
       message: 'Registration successful. Please verify your email.',
       userId,
@@ -128,6 +134,7 @@ router.post('/register', async (req, res) => {
       email,
       company,
       role,
+      verificationCode, // Include for development/testing
       ...(previewUrl && { previewUrl })
     });
   } catch (error) {
