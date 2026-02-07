@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 
-const API_BASE_URL = 'https://cynosural-outstanding-uriel.ngrok-free.dev';
+const API_BASE_URL = process.env.VITE_API_URL || 'http://localhost:3001';
 
 export interface Task {
   id: string;
