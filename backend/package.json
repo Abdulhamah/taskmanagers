@@ -7,7 +7,6 @@
   "scripts": {
     "dev": "node --loader ts-node/esm src/index.ts",
     "build": "tsc",
-    "buildyarn": "tsc",
     "start": "node dist/index.js",
     "db:init": "node --loader ts-node/esm src/db/init.ts"
   },
